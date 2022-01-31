@@ -82,9 +82,19 @@ export default {
       });
     }); */
 
+    fetch('http://localhost:3000/')
+      .then((res) => res.json())
+      .then((data) => {
+        data.forEach((item) => {
+          const msg = `${item.moment} - ${item.nick}: ${item.message}`
+          this.comments.push(msg);
+        });
+      });
+
     socket.on('message', (message) => {
       this.comments.push(message)
     });
+
   },
   methods: {
     addComment(e) {
