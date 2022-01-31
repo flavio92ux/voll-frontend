@@ -2,7 +2,11 @@ import { io } from 'socket.io-client';
 
 class SocketioService {
   socket;
-  constructor() {}
+  constructor() {
+    this.state = {
+      data: '',
+    }
+  }
 
   setupSocketConnection() {
     this.socket = io(process.env.VUE_APP_SOCKET_ENDPOINT);
@@ -10,7 +14,7 @@ class SocketioService {
     this.socket.emit('my message', 'Hello there from Vue.');
 
     this.socket.on('my broadcast', (data) => {
-      console.log(data);
+      this.setState(data);
     });
   }
 
@@ -18,7 +22,8 @@ class SocketioService {
     if (this.socket) {
         this.socket.disconnect();
     }
-} 
+  }
+
 }
 
 export default new SocketioService();
