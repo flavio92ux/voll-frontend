@@ -1,22 +1,27 @@
 <template>
     <fieldset class="nick">
-      <span id="user">Welcome to Trybe WebChat! Your nickname is {{ nick }} </span>
+      <span id="user">Welcome to VueJs chat! Your nickname is {{ nick }} </span>
       <div>
         <input
           id="nickInput"
           type="text"
           placeholder="Change your nickname"
+          v-model="newNick"
         >
         <button
-          id="nickBtn"
-          data-testid="nickname-button"
+           v-on:click="changeNick($event)"         
         >
         Submit
         </button>
       </div>
     </fieldset>
     <aside className="container-users">
-      <div id="online-users">OnLine Users</div>
+      <!-- <div>OnLine Users</div> -->
+<!--       <div
+        v-for="(user, index) in users" :key="index"
+      >
+        {{ user }}
+      </div> -->
       <div
         class="messages"
         id="messages"
@@ -50,7 +55,9 @@ export default {
   data() {
     return {
       comments: [],
+      users: [],
       nick: '',
+      newNick: '',
       message: '',
     };
   },
@@ -61,15 +68,22 @@ export default {
       if (!this.nick) {
         this.nick = nick;
         sessionStorage.setItem('nickname', nick);
+        socket.emit('addArray', nick)
       }
     });
 
+/*     socket.on('refreshList', (listUser) => {
+      this.users = []
+      const mainUser = sessionStorage.getItem('nickname');
+      this.users.push(mainUser);
+
+      listUser.forEach((item) => {
+        if (item != mainUser) this.users.push(item)
+      });
+    }); */
+
     socket.on('message', (message) => {
       this.comments.push(message)
-    });
-
-    socket.on('my broadcast', (data) => {
-      this.data = data;
     });
   },
   methods: {
@@ -80,6 +94,15 @@ export default {
         socket.emit('message', { chatMessage: this.message, nickname: this.nick })
       }
       this.message = '';
+    },
+    changeNick() {
+      let socket = io(process.env.VUE_APP_SOCKET_ENDPOINT);
+      const oldUser = sessionStorage.getItem('nickname');
+      const newUser = this.newNick;
+      sessionStorage.setItem('nickname', newUser);
+      socket.emit('replaceUser', (oldUser, newUser));
+      this.nick = newUser;
+      this.newNick = '';
     }
   },
   beforeUnmount() {
