@@ -1,6 +1,6 @@
 <template>
     <fieldset class="nick">
-      <span id="user">Welcome to Trybe WebChat! Your nickname is </span>
+      <span id="user">Welcome to Trybe WebChat! Your nickname is {{ nick }} </span>
       <div>
         <input
           id="nickInput"
@@ -16,19 +16,27 @@
       </div>
     </fieldset>
     <aside className="container-users">
-      <ul id="online-users">OnLine Users</ul>
-      <ul class="messages" id="messages">
-        <li>teste</li>
-      </ul>
+      <div id="online-users">OnLine Users</div>
+      <div
+        class="messages"
+        id="messages"
+        v-for="(comment, index) in comments" :key="index"
+      >
+       {{ comment }} 
+      </div>
     </aside>
     <form class="form" id="form" action="">
       <input
         class="input"
         id="input"
         autocomplete="off"
-        data-testid="message-box"
+        v-model="message"
       />
-      <button data-testid="send-button">Send</button>
+      <button
+        v-on:click="addComment($event)"
+      >
+        Send
+      </button>
     </form>
 </template>
 
@@ -41,21 +49,37 @@ export default {
   },
   data() {
     return {
-      data: ['loren', 'ipson'],
+      comments: [],
+      nick: '',
+      message: '',
     };
   },
   created() {
     let socket = io(process.env.VUE_APP_SOCKET_ENDPOINT);
 
-    socket.emit('my message', 'Hello there from Vue.');
+    socket.on('addNewUser', (nick) => {
+      if (!this.nick) {
+        this.nick = nick;
+        sessionStorage.setItem('nickname', nick);
+      }
+    });
+
+    socket.on('message', (message) => {
+      this.comments.push(message)
+    });
 
     socket.on('my broadcast', (data) => {
       this.data = data;
     });
   },
   methods: {
-    addComment() {
-      console.log("ola")
+    addComment(e) {
+      e.preventDefault();
+      let socket = io(process.env.VUE_APP_SOCKET_ENDPOINT);
+      if (this.message) {
+        socket.emit('message', { chatMessage: this.message, nickname: this.nick })
+      }
+      this.message = '';
     }
   },
   beforeUnmount() {
