@@ -90,7 +90,9 @@ export default {
       });
     });
 
-    fetch('http://localhost:3000/')
+    console.log(process.env.VUE_APP_SOCKET_ENDPOINT);
+
+    fetch(process.env.VUE_APP_SOCKET_ENDPOINT)
       .then((res) => res.json())
       .then((data) => {
         data.forEach((item, index) => {
