@@ -1,35 +1,45 @@
 <template>
-    <fieldset class="nick">
-      <span id="user">Welcome to VueJs chat! Your nickname is {{ nick }} </span>
-      <div>
-        <input
-          id="nickInput"
-          type="text"
-          placeholder="Change your nickname"
-          v-model="newNick"
-        >
-        <button
-           v-on:click="changeNick($event)"         
-        >
-        Submit
-        </button>
+    <fieldset>
+      <div class="topnav">
+        <span id="user">Welcome to VueJs chat! Your nickname is {{ nick }} </span>
+        <div class="search-container">
+          <form>
+            <input
+              id="nickInput"
+              type="text"
+              placeholder="Change your nickname"
+              v-model="newNick"
+            >
+            <button
+              v-on:click="changeNick($event)"         
+            >
+            Submit
+            </button>
+          </form>
+        </div>
       </div>
     </fieldset>
-    <aside className="container-users">
-      <div>OnLine Users</div>
-      <div
-        v-for="(user, index) in users" :key="index"
-      >
-        {{ user }}
-      </div>
-      <div
-        class="messages"
-        id="messages"
-        v-for="(comment, index) in comments" :key="index"
-      >
-       {{ comment }} 
-      </div>
-    </aside>
+    <div class="main-container">
+      <aside class="message-container">
+        <ul class="messages">
+          <li
+            class="messages"
+            id="messages"
+            v-for="(comment, index) in comments" :key="index"
+          >
+          {{ comment }} 
+          </li>
+        </ul>
+      </aside>
+      <aside className="users-container">
+        <ul>OnLine Users</ul>
+          <li
+            v-for="(user, index) in users" :key="index"
+          >
+            {{ user }}
+          </li>
+      </aside>
+    </div>
     <form class="form" id="form" action="">
       <input
         class="input"
@@ -106,7 +116,8 @@ export default {
       }
       this.message = '';
     },
-    changeNick() {
+    changeNick(e) {
+      e.preventDefault();
       if (this.newNick) {
         const oldUser = sessionStorage.getItem('nickname');
         const newUser = this.newNick;
@@ -131,10 +142,24 @@ body {
   padding-bottom: 3rem;
 }
 
+.main-container {
+  display: flex;
+  justify-content: space-between;
+}
+
 .container {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+}
+
+.users-container {
+  width: 20%;
+}
+
+.message-container {
+  position: sticky;
+  width: 95%;
 }
 
 .form {
@@ -179,10 +204,73 @@ body {
 }
 
 .messages > li {
-  padding: 0.5rem 1rem;
+  padding: 0.05rem
 }
 
 .messages > li:nth-child( odd ) {
   background: #efefef;
 }
+
+fieldset {
+  padding: 0%;
+}
+
+.topnav {
+  overflow: hidden;
+  background-color: #e9e9e9;
+}
+
+.topnav span {
+  float: left;
+  display: block;
+  color: black;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.topnav .search-container {
+  float: right;
+}
+
+.topnav input[type=text] {
+  padding: 6px;
+  margin-top: 8px;
+  font-size: 17px;
+  border: none;
+}
+
+.topnav .search-container button {
+  float: right;
+  padding: 6px;
+  margin-top: 8px;
+  margin-right: 16px;
+  background: #ddd;
+  font-size: 17px;
+  border: none;
+  cursor: pointer;
+}
+
+.topnav .search-container button:hover {
+  background: #ccc;
+}
+
+@media screen and (max-width: 600px) {
+  .topnav .search-container {
+    float: none;
+  }
+  .topnav span, .topnav input[type=text], .topnav .search-container button {
+    float: none;
+    display: block;
+    text-align: left;
+    width: 100%;
+    margin: 0;
+    padding: 14px;
+  }
+  .topnav input[type=text] {
+    border: 1px solid #ccc;  
+  }
+}
+
 </style>
