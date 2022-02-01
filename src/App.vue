@@ -90,8 +90,6 @@ export default {
       });
     });
 
-    console.log(process.env.VUE_APP_SOCKET_ENDPOINT);
-
     fetch(process.env.VUE_APP_SOCKET_ENDPOINT)
       .then((res) => res.json())
       .then((data) => {

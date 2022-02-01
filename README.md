@@ -23,3 +23,6 @@ npm run lint
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 # voll-frontend
+
+
+Deploy ~> https://boring-lumiere-137374.netlify.app/
