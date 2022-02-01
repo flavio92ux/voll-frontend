@@ -16,12 +16,12 @@
       </div>
     </fieldset>
     <aside className="container-users">
-      <!-- <div>OnLine Users</div> -->
-<!--       <div
+      <div>OnLine Users</div>
+      <div
         v-for="(user, index) in users" :key="index"
       >
         {{ user }}
-      </div> -->
+      </div>
       <div
         class="messages"
         id="messages"
@@ -59,65 +59,66 @@ export default {
       nick: '',
       newNick: '',
       message: '',
+      socket: io(process.env.VUE_APP_SOCKET_ENDPOINT),
     };
   },
   created() {
-    let socket = io(process.env.VUE_APP_SOCKET_ENDPOINT);
-
-    socket.on('addNewUser', (nick) => {
+    this.socket.on('addNewUser', (myUser) => {
       if (!this.nick) {
-        this.nick = nick;
-        sessionStorage.setItem('nickname', nick);
-        socket.emit('addArray', nick)
+        this.nick = myUser.nickname;
+        sessionStorage.setItem('nickname', myUser.nickname);
       }
     });
 
-/*     socket.on('refreshList', (listUser) => {
+    this.socket.on('refreshList', (listUser) => {
       this.users = []
       const mainUser = sessionStorage.getItem('nickname');
       this.users.push(mainUser);
 
       listUser.forEach((item) => {
-        if (item != mainUser) this.users.push(item)
+        if (item.nickname != mainUser) this.users.push(item.nickname)
       });
-    }); */
+    });
 
     fetch('http://localhost:3000/')
       .then((res) => res.json())
       .then((data) => {
-        data.forEach((item) => {
-          const msg = `${item.moment} - ${item.nick}: ${item.message}`
-          this.comments.push(msg);
+        data.forEach((item, index) => {
+          if (index >= data.length - 30) {
+            const msg = `${item.moment} - ${item.nick}: ${item.message}`
+            this.comments.push(msg);
+          }
         });
       });
 
-    socket.on('message', (message) => {
-      this.comments.push(message)
+    this.socket.on('message', (message) => {
+      const comments = this.comments;
+      comments.push(message)
+      this.comments = comments.splice(comments.length - 30)
     });
 
   },
   methods: {
     addComment(e) {
       e.preventDefault();
-      let socket = io(process.env.VUE_APP_SOCKET_ENDPOINT);
       if (this.message) {
-        socket.emit('message', { chatMessage: this.message, nickname: this.nick })
+        this.socket.emit('message', { chatMessage: this.message, nickname: this.nick })
       }
       this.message = '';
     },
     changeNick() {
-      let socket = io(process.env.VUE_APP_SOCKET_ENDPOINT);
-      const oldUser = sessionStorage.getItem('nickname');
-      const newUser = this.newNick;
-      sessionStorage.setItem('nickname', newUser);
-      socket.emit('replaceUser', (oldUser, newUser));
-      this.nick = newUser;
-      this.newNick = '';
+      if (this.newNick) {
+        const oldUser = sessionStorage.getItem('nickname');
+        const newUser = this.newNick;
+        sessionStorage.setItem('nickname', newUser);
+        this.socket.emit('replaceUser', { oldUser, newUser });
+        this.nick = newUser;
+        this.newNick = '';
+      }
     }
   },
   beforeUnmount() {
-    let socket = io(process.env.VUE_APP_SOCKET_ENDPOINT);
-    socket.disconnect();
+    this.socket.disconnect();
   }
 }
 </script>
