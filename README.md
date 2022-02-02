@@ -1,11 +1,11 @@
-# socketio-vue
+# **socketio-vue**
 
 ## Project setup
 ```
 npm install
 ```
 
-### configure enviroment variables
+### Configure enviroment variables
 ```
 .env
 ```
