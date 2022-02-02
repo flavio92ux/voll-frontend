@@ -5,9 +5,9 @@
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### configure enviroment variables
 ```
-npm run serve
+.env
 ```
 
 ### Compiles and minifies for production
