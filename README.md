@@ -29,9 +29,9 @@ npm start
 See [Configuration Reference](https://cli.vuejs.org/config/).
 # voll-frontend
 
-## Para o funcionamento do projeto, é necessário baixar e rodar o projeto abaixo:
+## Para o funcionamento do projeto, é necessário baixar e rodar o projeto de back-end:
 Back-end ~> https://github.com/flavio92ux/voll-backend
 
 ## Deploy no Netlify
 
-Deploy ~> https://boring-lumiere-137374.netlify.app/
+https://boring-lumiere-137374.netlify.app/
